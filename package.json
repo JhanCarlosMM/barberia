@@ -1,0 +1,15 @@
+{
+  "name": "barberia",
+  "version": "1.0.0",
+  "description": "Sistema de gestión de citas para barbería",
+  "main": "barberia-api/server.js",
+  "scripts": {
+    "start": "cd barberia-api && npm start",
+    "dev": "cd barberia-api && npm run dev",
+    "install-all": "npm install && cd barberia-api && npm install",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": ["barberia", "citas", "reservas"],
+  "author": "",
+  "license": "ISC"
+}

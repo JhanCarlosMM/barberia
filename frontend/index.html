@@ -1,0 +1,195 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Barbería - Sistema de Reservas</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <!-- ===== HEADER ===== -->
+  <header>
+    <nav>
+      <div class="logo">✂️ Barbería Mi Estilo</div>
+      <ul class="nav-menu">
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="barbers.html">Barberos</a></li>
+        <li><a href="booking.html">Reservar</a></li>
+        <li><a href="#contact">Contacto</a></li>
+      </ul>
+      <div class="nav-auth">
+        <a href="login.html" class="btn btn-primary btn-small">Iniciar Sesión</a>
+        <a href="register.html" class="btn btn-secondary btn-small">Registrarse</a>
+      </div>
+      <div class="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ===== HERO ===== -->
+  <section class="hero">
+    <div class="hero-content">
+      <h1>Bienvenido a Barbería Elite</h1>
+      <p>Los mejores barberos, los mejores cortes. Reserva tu cita en línea de forma rápida y sencilla.</p>
+      <a href="booking.html" class="btn btn-primary">Reservar Ahora</a>
+      <a href="#features" class="btn btn-secondary">Más Información</a>
+    </div>
+  </section>
+
+  <!-- ===== FEATURES ===== -->
+  <section class="section" id="features">
+    <div class="container">
+      <h2 class="text-center mb-4">¿Por qué elegirnos?</h2>
+      <div class="grid grid-3">
+        <div class="card">
+          <h3 class="card-title">👨‍💼 Barberos Profesionales</h3>
+          <p>Nuestro equipo de barberos altamente capacitados ofrece un servicio de clase mundial con técnicas modernas.</p>
+        </div>
+        <div class="card">
+          <h3 class="card-title">📱 Reservas en Línea</h3>
+          <p>Reserva tu cita desde casa de forma fácil y rápida. Visualiza disponibilidad en tiempo real.</p>
+        </div>
+        <div class="card">
+          <h3 class="card-title">💎 Calidad Premium</h3>
+          <p>Utilizamos productos premium y técnicas de vanguardia para los mejores resultados.</p>
+        </div>
+        <div class="card">
+          <h3 class="card-title">⏰ Horarios Flexibles</h3>
+          <p>Estamos disponibles de lunes a domingo con horarios extendidos para tu comodidad.</p>
+        </div>
+        <div class="card">
+          <h3 class="card-title">🌐 Ambiente Moderno</h3>
+          <p>Disfruta de un ambiente contemporáneo, limpio y cómodo durante tu visita.</p>
+        </div>
+        <div class="card">
+          <h3 class="card-title">🎯 Resultados Garantizados</h3>
+          <p>Garantizamos tu satisfacción. Si no quedas conforme, ajustaremos tu corte sin costo.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== BARBEROS DESTACADOS ===== -->
+  <section class="section" style="background-color: var(--light-blue);">
+    <div class="container">
+      <h2 class="text-center mb-4">Nuestros Barberos Destacados</h2>
+      <div class="grid grid-3" id="barbers-container">
+        <div class="card">
+          <h3 class="card-title">Juan Pérez</h3>
+          <p>Experiencia: 10 años</p>
+          <p style="font-size: 0.9rem; color: var(--text-light);">Especialista en cortes modernos y barba.</p>
+          <p class="badge badge-primary">⭐ Top Barbero</p>
+        </div>
+      </div>
+      <div class="text-center mt-4">
+        <a href="barbers.html" class="btn btn-primary">Ver Todos los Barberos</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CTA ===== -->
+  <section class="section" style="background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%); color: white;">
+    <div class="container text-center">
+      <h2>¿Listo para tu siguiente corte?</h2>
+      <p style="color: rgba(255, 255, 255, 0.9); margin-bottom: 2rem;">Elige tu barbero favorito y reserva tu cita ahora mismo.</p>
+      <a href="booking.html" class="btn btn-secondary" style="background-color: white; color: var(--primary-blue);">Reservar Cita</a>
+    </div>
+  </section>
+
+  <!-- ===== CONTACT ===== -->
+  <section class="section" id="contact">
+    <div class="container">
+      <h2 class="text-center mb-4">Contacto</h2>
+      <div class="grid grid-2">
+        <div>
+          <h3>📍 Ubicación</h3>
+          <p>Calle Principal 123</p>
+          <p>Ciudad, Estado 12345</p>
+          <p style="margin-top: 1rem;">
+            <strong>Teléfono:</strong> (555) 123-4567<br>
+            <strong>Email:</strong> info@barberia.com
+          </p>
+        </div>
+        <div>
+          <h3>🕐 Horarios</h3>
+          <p>
+            <strong>Lunes - Viernes:</strong> 9:00 - 18:00<br>
+            <strong>Sábado:</strong> 9:00 - 20:00<br>
+            <strong>Domingo:</strong> 10:00 - 17:00
+          </p>
+          <p style="margin-top: 1rem; font-size: 0.9rem;">
+            <em>Cerrado los festivos</em>
+          </p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <div class="footer-content">
+      <div class="footer-section">
+        <h4>Sobre Nosotros</h4>
+        <p>Barbería Elite es tu destino de confianza para cortes de calidad premium con los mejores barberos.</p>
+      </div>
+      <div class="footer-section">
+        <h4>Enlaces Rápidos</h4>
+        <ul>
+          <li><a href="index.html">Inicio</a></li>
+          <li><a href="barbers.html">Barberos</a></li>
+          <li><a href="booking.html">Reservar</a></li>
+          <li><a href="#contact">Contacto</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Redes Sociales</h4>
+        <ul>
+          <li><a href="#">Facebook</a></li>
+          <li><a href="#">Instagram</a></li>
+          <li><a href="#">WhatsApp</a></li>
+        </ul>
+      </div>
+      <div class="footer-section">
+        <h4>Políticas</h4>
+        <ul>
+          <li><a href="#">Privacidad</a></li>
+          <li><a href="#">Términos de Servicio</a></li>
+          <li><a href="#">Cancelaciones</a></li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-bottom">
+      <p>&copy; 2024 Barbería Elite. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // Cargar barberos destacados
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const barberos = await api.getBarbers();
+        const container = document.getElementById('barbers-container');
+        
+        if (barberos.length > 0) {
+          container.innerHTML = barberos.slice(0, 3).map(barbero => `
+            <div class="card">
+              <h3 class="card-title">${barbero.nombre}</h3>
+              <p>Horario: ${UI.formatTime(barbero.hora_inicio)} - ${UI.formatTime(barbero.hora_fin)}</p>
+              <p style="font-size: 0.9rem; color: var(--text-light);">Disponible para reservas</p>
+              <p class="badge badge-primary">⭐ Barbero Destacado</p>
+            </div>
+          `).join('');
+        }
+      } catch (error) {
+        console.log('No se pudieron cargar los barberos');
+      }
+    });
+  </script>
+</body>
+</html>

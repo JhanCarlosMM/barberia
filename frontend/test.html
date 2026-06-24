@@ -1,0 +1,259 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Test de API - Barbería Elite</title>
+  <link rel="stylesheet" href="css/styles.css">
+  <style>
+    .test-result { padding: 1rem; border-radius: 8px; margin: 1rem 0; font-family: monospace; }
+    .test-success { background: #d4edda; border-left: 4px solid #28a745; color: #155724; }
+    .test-error { background: #f8d7da; border-left: 4px solid #dc3545; color: #721c24; }
+    .test-info { background: #d1ecf1; border-left: 4px solid #0c5460; color: #0c5460; }
+    .endpoint { background: #f5f5f5; padding: 0.5rem; border-radius: 4px; margin: 0.5rem 0; }
+  </style>
+</head>
+<body>
+  <header>
+    <nav>
+      <div class="logo">✂️ Barbería Elite</div>
+      <ul class="nav-menu">
+        <li><a href="index.html">Inicio</a></li>
+      </ul>
+      <div class="nav-auth">
+        <a href="index.html" class="btn btn-primary btn-small">Volver</a>
+      </div>
+    </nav>
+  </header>
+
+  <section class="section">
+    <div class="container">
+      <h1>🔧 Test de Conexión API</h1>
+      <p style="color: var(--text-light); margin-bottom: 2rem;">
+        Usa esta página para diagnosticar problemas de conectividad con el servidor.
+      </p>
+
+      <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 1rem; margin-bottom: 2rem;">
+        <button class="btn btn-primary" onclick="testServerConnection()">1. Test Servidor</button>
+        <button class="btn btn-primary" onclick="testGetBarbers()">2. Obtener Barberos</button>
+        <button class="btn btn-primary" onclick="testGetHaircuts()">3. Obtener Cortes</button>
+        <button class="btn btn-primary" onclick="testAvailability()">4. Test Disponibilidad</button>
+        <button class="btn btn-secondary" onclick="clearResults()">Limpiar Resultados</button>
+        <button class="btn btn-secondary" onclick="window.location.href='index.html'">Volver al Inicio</button>
+      </div>
+
+      <div id="results-container"></div>
+
+      <hr style="margin: 2rem 0;">
+
+      <h2>📋 Información del Sistema</h2>
+      <div class="test-info">
+        <p><strong>API URL:</strong> <span id="api-url">http://localhost:3000/api</span></p>
+        <p><strong>Frontend URL:</strong> <span id="frontend-url"></span></p>
+        <p><strong>Timestamp:</strong> <span id="timestamp"></span></p>
+        <p><strong>Autenticado:</strong> <span id="auth-status">No</span></p>
+      </div>
+
+      <h2 style="margin-top: 2rem;">📖 Guía Rápida</h2>
+      <ol style="line-height: 2;">
+        <li><strong>Test Servidor:</strong> Verifica que el backend está corriendo en puerto 3000</li>
+        <li><strong>Obtener Barberos:</strong> Prueba si la BD tiene registros en la tabla barberos</li>
+        <li><strong>Obtener Cortes:</strong> Prueba si la BD tiene tipos de corte registrados</li>
+        <li><strong>Test Disponibilidad:</strong> Prueba el endpoint más crítico para reservas</li>
+      </ol>
+
+      <h2 style="margin-top: 2rem;">🐛 Solución de Problemas</h2>
+      <div style="background: var(--light-blue); padding: 1.5rem; border-radius: 8px;">
+        <h3>Si todos los tests fallan:</h3>
+        <ol style="margin-left: 1.5rem; color: var(--text-light);">
+          <li>Verifica que Node.js está corriendo: <code>cd barberia-api && npm run dev</code></li>
+          <li>Verifica que MySQL está corriendo y conectado</li>
+          <li>Comprueba el archivo .env tiene las credenciales correctas</li>
+          <li>Abre la consola del navegador (F12) y busca errores CORS</li>
+          <li>Reinicia el servidor backend</li>
+        </ol>
+      </div>
+
+      <h2 style="margin-top: 2rem;">📞 Contacto</h2>
+      <p style="color: var(--text-light);">
+        Si los tests siguen fallando, revisa los logs del servidor en la terminal donde ejecutaste <code>npm run dev</code>
+      </p>
+    </div>
+  </section>
+
+  <footer>
+    <div class="footer-bottom">
+      <p>&copy; 2024 Barbería Elite.</p>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    // Actualizar info del sistema
+    document.getElementById('frontend-url').textContent = window.location.href;
+    document.getElementById('timestamp').textContent = new Date().toLocaleString();
+    document.getElementById('auth-status').textContent = Auth.isAuthenticated() ? '✅ Sí' : '❌ No';
+
+    const resultsContainer = document.getElementById('results-container');
+
+    function addResult(title, success, message, details = '') {
+      const result = document.createElement('div');
+      result.className = `test-result ${success ? 'test-success' : 'test-error'}`;
+      result.innerHTML = `
+        <h3>${success ? '✅' : '❌'} ${title}</h3>
+        <p>${message}</p>
+        ${details ? `<pre style="margin-top: 0.5rem; font-size: 0.85rem; overflow-x: auto;">${details}</pre>` : ''}
+      `;
+      resultsContainer.appendChild(result);
+    }
+
+    async function testServerConnection() {
+      console.log('[TEST] Iniciando test de conexión al servidor...');
+      try {
+        const response = await fetch('http://localhost:3000/api/barbers', {
+          method: 'GET',
+          headers: { 'Content-Type': 'application/json' }
+        });
+        
+        if (response.ok) {
+          addResult(
+            'Conexión al Servidor',
+            true,
+            '✅ El servidor está corriendo y respondiendo correctamente.',
+            `Estado: ${response.status}\nURL: http://localhost:3000/api`
+          );
+        } else {
+          addResult(
+            'Conexión al Servidor',
+            false,
+            `Servidor respondió con error ${response.status}`,
+            `Status: ${response.status} ${response.statusText}`
+          );
+        }
+      } catch (error) {
+        addResult(
+          'Conexión al Servidor',
+          false,
+          '❌ No se puede conectar al servidor. Asegúrate de que está corriendo.',
+          `Error: ${error.message}\n\nExecuta: cd barberia-api && npm run dev`
+        );
+      }
+    }
+
+    async function testGetBarbers() {
+      console.log('[TEST] Obteniendo barberos...');
+      try {
+        const barberos = await api.getBarbers();
+        if (barberos && barberos.length > 0) {
+          addResult(
+            'Obtener Barberos',
+            true,
+            `✅ Se encontraron ${barberos.length} barberos en la BD`,
+            `Datos: ${JSON.stringify(barberos, null, 2)}`
+          );
+        } else {
+          addResult(
+            'Obtener Barberos',
+            false,
+            '⚠️ No hay barberos en la base de datos',
+            'Necesitas agregar barberos en MySQL Workbench'
+          );
+        }
+      } catch (error) {
+        addResult(
+          'Obtener Barberos',
+          false,
+          `Error al obtener barberos: ${error.message}`,
+          `Stack: ${error.stack}`
+        );
+      }
+    }
+
+    async function testGetHaircuts() {
+      console.log('[TEST] Obteniendo tipos de corte...');
+      try {
+        const cortes = await api.getHaircuts();
+        if (cortes && cortes.length > 0) {
+          addResult(
+            'Obtener Cortes',
+            true,
+            `✅ Se encontraron ${cortes.length} tipos de corte`,
+            `Datos: ${JSON.stringify(cortes, null, 2)}`
+          );
+        } else {
+          addResult(
+            'Obtener Cortes',
+            false,
+            '⚠️ No hay tipos de corte en la base de datos',
+            'Necesitas agregar tipos de corte en MySQL Workbench'
+          );
+        }
+      } catch (error) {
+        addResult(
+          'Obtener Cortes',
+          false,
+          `Error al obtener cortes: ${error.message}`,
+          `Stack: ${error.stack}`
+        );
+      }
+    }
+
+    async function testAvailability() {
+      console.log('[TEST] Testeando endpoint de disponibilidad...');
+      
+      // Obtener un barbero primero
+      try {
+        const barberos = await api.getBarbers();
+        if (!barberos || barberos.length === 0) {
+          addResult(
+            'Test Disponibilidad',
+            false,
+            'No hay barberos para testear',
+            'Primero debes ejecutar "Obtener Barberos"'
+          );
+          return;
+        }
+
+        const barberoId = barberos[0].id;
+        const fecha = new Date().toISOString().split('T')[0]; // Hoy
+        
+        console.log(`[TEST] Solicitando disponibilidad para barbero ${barberoId} en fecha ${fecha}`);
+        
+        const result = await api.getAvailableSlots(barberoId, fecha, 30);
+        
+        if (result.disponibles) {
+          addResult(
+            'Test Disponibilidad',
+            true,
+            `✅ Endpoint respondió correctamente. Se encontraron ${result.disponibles.length} horarios disponibles`,
+            `Respuesta: ${JSON.stringify(result, null, 2)}`
+          );
+        } else {
+          addResult(
+            'Test Disponibilidad',
+            false,
+            'Respuesta inválida del endpoint',
+            `Respuesta: ${JSON.stringify(result, null, 2)}`
+          );
+        }
+      } catch (error) {
+        addResult(
+          'Test Disponibilidad',
+          false,
+          `Error en endpoint de disponibilidad: ${error.message}`,
+          `Stack: ${error.stack}`
+        );
+      }
+    }
+
+    function clearResults() {
+      resultsContainer.innerHTML = '';
+    }
+
+    // Test automático al cargar
+    console.log('🔧 Página de Test cargada');
+  </script>
+</body>
+</html>

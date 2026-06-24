@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reservar Cita - Barbería Elite</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <!-- ===== HEADER ===== -->
+  <header>
+    <nav>
+      <div class="logo">✂️ Barbería Elite</div>
+      <ul class="nav-menu">
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="barbers.html">Barberos</a></li>
+        <li><a href="booking.html">Reservar</a></li>
+      </ul>
+      <div class="nav-auth">
+        <a href="login.html" class="btn btn-primary btn-small">Iniciar Sesión</a>
+        <a href="register.html" class="btn btn-secondary btn-small">Registrarse</a>
+      </div>
+      <div class="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ===== CONTENT ===== -->
+  <section class="section">
+    <div class="container">
+      <h1 class="text-center mb-4">Reservar Cita</h1>
+      
+      <div style="max-width: 600px; margin: 0 auto;">
+        <div id="alert-container"></div>
+
+        <!-- PASO 1: SELECCIONAR BARBERO -->
+        <div class="booking-step" id="step-1">
+          <h3 class="mb-3">1. Selecciona un Barbero</h3>
+          <div class="form-group">
+            <label for="barbero_id">Barbero</label>
+            <select id="barbero_id" name="barbero_id" class="form-control" required>
+              <option value="">-- Selecciona un barbero --</option>
+            </select>
+            <div class="form-error">Debes seleccionar un barbero</div>
+          </div>
+          <button type="button" class="btn btn-primary" onclick="goToStep(2)">Siguiente</button>
+        </div>
+
+        <!-- PASO 2: SELECCIONAR TIPO DE CORTE -->
+        <div class="booking-step hidden" id="step-2">
+          <h3 class="mb-3">2. Selecciona el Tipo de Corte</h3>
+          <div class="form-group">
+            <label for="tipo_corte_id">Tipo de Corte</label>
+            <select id="tipo_corte_id" name="tipo_corte_id" class="form-control" required>
+              <option value="">-- Selecciona un corte --</option>
+            </select>
+            <div class="form-error">Debes seleccionar un tipo de corte</div>
+          </div>
+          <div style="display: flex; gap: 1rem;">
+            <button type="button" class="btn btn-secondary" onclick="goToStep(1)">Atrás</button>
+            <button type="button" class="btn btn-primary" onclick="goToStep(3)" style="flex: 1;">Siguiente</button>
+          </div>
+        </div>
+
+        <!-- PASO 3: SELECCIONAR FECHA Y HORA -->
+        <div class="booking-step hidden" id="step-3">
+          <h3 class="mb-3">3. Selecciona Fecha y Hora</h3>
+          
+          <div class="form-group">
+            <label for="fecha">Fecha</label>
+            <input type="date" id="fecha" name="fecha" class="form-control" required>
+            <div class="form-error">Debes seleccionar una fecha válida</div>
+          </div>
+
+          <div class="form-group">
+            <label for="hora">Hora Disponible</label>
+            <select id="hora" name="hora" class="form-control" required>
+              <option value="">-- Selecciona una hora --</option>
+            </select>
+            <div class="form-error">Debes seleccionar una hora</div>
+          </div>
+
+          <p id="availability-loading" class="hidden text-center">
+            <div class="spinner" style="display: inline-block; margin-right: 0.5rem;"></div>
+            Cargando horarios disponibles...
+          </p>
+
+          <div style="display: flex; gap: 1rem;">
+            <button type="button" class="btn btn-secondary" onclick="goToStep(2)">Atrás</button>
+            <button type="button" class="btn btn-primary" onclick="goToStep(4)" style="flex: 1;">Siguiente</button>
+          </div>
+        </div>
+
+        <!-- PASO 4: CONFIRMACIÓN -->
+        <div class="booking-step hidden" id="step-4">
+          <h3 class="mb-3">4. Confirmar Cita</h3>
+          
+          <div class="card" style="background-color: var(--light-blue); margin-bottom: 1.5rem;">
+            <p><strong>Barbero:</strong> <span id="confirm-barbero">-</span></p>
+            <p><strong>Corte:</strong> <span id="confirm-corte">-</span></p>
+            <p><strong>Fecha:</strong> <span id="confirm-fecha">-</span></p>
+            <p><strong>Hora:</strong> <span id="confirm-hora">-</span></p>
+          </div>
+
+          <p style="color: var(--text-light); font-size: 0.9rem;">
+            Al confirmar, recibirás un email de confirmación con los detalles de tu cita.
+          </p>
+
+          <div style="display: flex; gap: 1rem;">
+            <button type="button" class="btn btn-secondary" onclick="goToStep(3)">Atrás</button>
+            <button type="button" class="btn btn-success" onclick="submitBooking()" style="flex: 1;">Confirmar Cita</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer style="margin-top: 4rem;">
+    <div class="footer-bottom">
+      <p>&copy; 2024 Barbería Elite. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    let currentStep = 1;
+    let bookingData = {
+      barbero_id: null,
+      tipo_corte_id: null,
+      fecha: null,
+      hora: null
+    };
+
+    // Cargar barberos
+    document.addEventListener('DOMContentLoaded', async () => {
+      // Establecer fecha mínima a hoy
+      const today = new Date().toISOString().split('T')[0];
+      document.getElementById('fecha').setAttribute('min', today);
+      
+      try {
+        const barberos = await api.getBarbers();
+        const select = document.getElementById('barbero_id');
+        barberos.forEach(barbero => {
+          const option = document.createElement('option');
+          option.value = barbero.id;
+          option.textContent = `${barbero.nombre} (${UI.formatTime(barbero.hora_inicio)} - ${UI.formatTime(barbero.hora_fin)})`;
+          select.appendChild(option);
+        });
+
+        const cortes = await api.getHaircuts();
+        const selectCorte = document.getElementById('tipo_corte_id');
+        cortes.forEach(corte => {
+          const option = document.createElement('option');
+          option.value = corte.id;
+          option.textContent = `${corte.nombre} (${corte.duracion_minutos} min)`;
+          option.dataset.duracion = corte.duracion_minutos;
+          selectCorte.appendChild(option);
+        });
+
+        // Auto-select from URL parameter
+        const urlParams = new URLSearchParams(window.location.search);
+        const barberParam = urlParams.get('barbero');
+        if (barberParam) {
+          select.value = barberParam;
+        }
+      } catch (error) {
+        UI.showAlert('Error al cargar datos', 'danger');
+      }
+
+      // Listener para cambios en fecha
+      document.getElementById('fecha').addEventListener('change', () => {
+        console.log('Evento: Fecha cambiada');
+        loadAvailableSlots();
+      });
+      
+      document.getElementById('barbero_id').addEventListener('change', () => {
+        console.log('Evento: Barbero cambiado');
+        document.getElementById('hora').innerHTML = '<option value="">-- Selecciona una hora --</option>';
+        document.getElementById('availability-loading').classList.add('hidden');
+      });
+      
+      document.getElementById('tipo_corte_id').addEventListener('change', () => {
+        console.log('Evento: Tipo de corte cambiado');
+        document.getElementById('hora').innerHTML = '<option value="">-- Selecciona una hora --</option>';
+        document.getElementById('availability-loading').classList.add('hidden');
+      });
+    });
+
+    async function loadAvailableSlots() {
+      const barberoId = document.getElementById('barbero_id').value;
+      const fecha = document.getElementById('fecha').value;
+      const tipoCorteSelect = document.getElementById('tipo_corte_id');
+      const selectedOption = tipoCorteSelect.options[tipoCorteSelect.selectedIndex];
+      const duracion = selectedOption ? selectedOption.dataset.duracion : null;
+
+      const loading = document.getElementById('availability-loading');
+      const horaSelect = document.getElementById('hora');
+
+      if (!barberoId || !fecha || !duracion) {
+        horaSelect.innerHTML = '<option value="">-- Selecciona una hora --</option>';
+        loading.classList.add('hidden');
+        return;
+      }
+
+      console.log(`[API] Solicitando disponibilidad: barbero=${barberoId}, fecha=${fecha}, duracion=${duracion}`);
+      loading.classList.remove('hidden');
+      horaSelect.disabled = true;
+
+      let intentos = 0;
+      const maxIntentos = 3;
+
+      const intentarCargar = async () => {
+        try {
+          intentos++;
+          console.log(`[API] Intento ${intentos}/${maxIntentos}...`);
+          
+          const result = await api.getAvailableSlots(parseInt(barberoId), fecha, parseInt(duracion));
+          
+          console.log('[API] ✅ Respuesta recibida:', result);
+          horaSelect.innerHTML = '<option value="">-- Selecciona una hora --</option>';
+          
+          if (result.disponibles && result.disponibles.length > 0) {
+            console.log(`[UI] Agregando ${result.disponibles.length} horarios disponibles`);
+            result.disponibles.forEach(slot => {
+              const option = document.createElement('option');
+              option.value = slot;
+              option.textContent = slot;
+              horaSelect.appendChild(option);
+            });
+            UI.showAlert(`✅ ${result.disponibles.length} horarios disponibles`, 'success', 3000);
+          } else {
+            console.log('[UI] Sin horarios disponibles');
+            const option = document.createElement('option');
+            option.disabled = true;
+            option.textContent = 'No hay horarios disponibles';
+            horaSelect.appendChild(option);
+            UI.showAlert('⏰ No hay horarios disponibles para esta fecha. Intenta otro día.', 'warning', 3000);
+          }
+        } catch (error) {
+          console.error(`[API] ❌ Error en intento ${intentos}:`, error);
+          
+          // Mensajes de error más descriptivos
+          let mensajeError = error.message || 'Error al cargar horarios';
+          if (mensajeError.includes('fechas pasadas')) {
+            mensajeError = '📅 No puedes reservar en fechas pasadas';
+          }
+          
+          if (intentos < maxIntentos && !error.message.includes('pasadas')) {
+            console.log(`[API] Reintentando en 2 segundos...`);
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            return intentarCargar();
+          } else {
+            console.error('[API] 🔴 Error definitivo');
+            horaSelect.innerHTML = '<option value="">-- Error cargando horarios --</option>';
+            UI.showAlert(mensajeError, 'danger', 5000);
+          }
+        } finally {
+          loading.classList.add('hidden');
+          horaSelect.disabled = false;
+        }
+      };
+
+      return intentarCargar();
+    }
+
+    function goToStep(step) {
+      if (currentStep === 1 && step === 2) {
+        if (!document.getElementById('barbero_id').value) {
+          UI.showError('barbero_id', 'Debes seleccionar un barbero');
+          return;
+        }
+      } else if (currentStep === 2 && step === 3) {
+        if (!document.getElementById('tipo_corte_id').value) {
+          UI.showError('tipo_corte_id', 'Debes seleccionar un tipo de corte');
+          return;
+        }
+      } else if (currentStep === 3 && step === 4) {
+        if (!document.getElementById('fecha').value || !document.getElementById('hora').value) {
+          if (!document.getElementById('fecha').value) {
+            UI.showError('fecha', 'Debes seleccionar una fecha');
+          }
+          if (!document.getElementById('hora').value) {
+            UI.showError('hora', 'Debes seleccionar una hora');
+          }
+          return;
+        }
+        updateConfirmation();
+      }
+
+      document.querySelectorAll('.booking-step').forEach(step => step.classList.add('hidden'));
+      document.getElementById(`step-${step}`).classList.remove('hidden');
+      currentStep = step;
+      window.scrollTo(0, 0);
+    }
+
+    function updateConfirmation() {
+      const barberoSelect = document.getElementById('barbero_id');
+      const corteSelect = document.getElementById('tipo_corte_id');
+      const fecha = document.getElementById('fecha').value;
+      const hora = document.getElementById('hora').value;
+
+      document.getElementById('confirm-barbero').textContent = barberoSelect.options[barberoSelect.selectedIndex].textContent;
+      document.getElementById('confirm-corte').textContent = corteSelect.options[corteSelect.selectedIndex].textContent;
+      document.getElementById('confirm-fecha').textContent = UI.formatDate(fecha);
+      document.getElementById('confirm-hora').textContent = hora;
+
+      bookingData = {
+        barbero_id: parseInt(barberoSelect.value),
+        tipo_corte_id: parseInt(corteSelect.value),
+        fecha: fecha,
+        hora: hora
+      };
+    }
+
+    async function submitBooking() {
+      if (!Auth.isAuthenticated()) {
+        UI.showAlert('Debes iniciar sesión para reservar', 'warning');
+        setTimeout(() => {
+          window.location.href = 'login.html';
+        }, 2000);
+        return;
+      }
+
+      const btn = event.target;
+      btn.disabled = true;
+      btn.textContent = 'Reservando...';
+
+      try {
+        const inicioTime = `${bookingData.fecha}T${bookingData.hora}:00`;
+        const response = await api.createAppointment(
+          bookingData.barbero_id,
+          bookingData.tipo_corte_id,
+          inicioTime
+        );
+
+        UI.showAlert('¡Cita reservada exitosamente!', 'success', 2000);
+        
+        setTimeout(() => {
+          window.location.href = 'dashboard.html';
+        }, 2000);
+
+      } catch (error) {
+        UI.showAlert(error.message || 'Error al reservar cita', 'danger');
+        btn.disabled = false;
+        btn.textContent = 'Confirmar Cita';
+      }
+    }
+  </script>
+</body>
+</html>

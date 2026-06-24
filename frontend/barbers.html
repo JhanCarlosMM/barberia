@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nuestros Barberos - Barbería Elite</title>
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <!-- ===== HEADER ===== -->
+  <header>
+    <nav>
+      <div class="logo">✂️ Barbería Elite</div>
+      <ul class="nav-menu">
+        <li><a href="index.html">Inicio</a></li>
+        <li><a href="barbers.html">Barberos</a></li>
+        <li><a href="booking.html">Reservar</a></li>
+      </ul>
+      <div class="nav-auth">
+        <a href="login.html" class="btn btn-primary btn-small">Iniciar Sesión</a>
+        <a href="register.html" class="btn btn-secondary btn-small">Registrarse</a>
+      </div>
+      <div class="hamburger">
+        <span></span>
+        <span></span>
+        <span></span>
+      </div>
+    </nav>
+  </header>
+
+  <!-- ===== CONTENT ===== -->
+  <section class="section">
+    <div class="container">
+      <h1 class="text-center mb-4">Nuestros Barberos</h1>
+      <p class="text-center" style="color: var(--text-light); margin-bottom: 3rem;">Conoce a nuestro equipo de profesionales altamente capacitados</p>
+
+      <div class="grid grid-3" id="barbers-container">
+        <div class="card">
+          <div class="spinner" style="margin: 2rem auto;"></div>
+          <p class="text-center">Cargando barberos...</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== CTA ===== -->
+  <section class="section" style="background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%); color: white;">
+    <div class="container text-center">
+      <h2>¿Listo para tu próxima cita?</h2>
+      <p style="color: rgba(255, 255, 255, 0.9); margin-bottom: 2rem;">Elige tu barbero favorito y reserva ahora.</p>
+      <a href="booking.html" class="btn btn-secondary" style="background-color: white; color: var(--primary-blue);">Reservar Cita</a>
+    </div>
+  </section>
+
+  <!-- ===== FOOTER ===== -->
+  <footer>
+    <div class="footer-bottom">
+      <p>&copy; 2024 Barbería Elite. Todos los derechos reservados.</p>
+    </div>
+  </footer>
+
+  <script src="js/api.js"></script>
+  <script src="js/auth.js"></script>
+  <script src="js/app.js"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', async () => {
+      const container = document.getElementById('barbers-container');
+
+      try {
+        const barberos = await api.getBarbers();
+        
+        if (barberos.length > 0) {
+          container.innerHTML = barberos.map(barbero => `
+            <div class="card">
+              <div style="background: linear-gradient(135deg, var(--primary-blue) 0%, var(--secondary-blue) 100%); 
+                          color: white; padding: 2rem; border-radius: 8px 8px 0 0; text-align: center;">
+                <h3 style="margin: 0; font-size: 1.5rem;">👨‍💼</h3>
+              </div>
+              <h3 class="card-title">${barbero.nombre}</h3>
+              <p>
+                <strong>Horario:</strong><br>
+                ${UI.formatTime(barbero.hora_inicio)} - ${UI.formatTime(barbero.hora_fin)}
+              </p>
+              <p style="font-size: 0.9rem; color: var(--text-light);">
+                Disponible de lunes a domingo
+              </p>
+              <div style="display: flex; gap: 0.5rem; margin-top: 1rem;">
+                <a href="booking.html?barbero=${barbero.id}" class="btn btn-primary" style="flex: 1; text-align: center; padding: 10px 0;">Reservar</a>
+              </div>
+            </div>
+          `).join('');
+        } else {
+          container.innerHTML = `<p class="text-center">No hay barberos disponibles en este momento.</p>`;
+        }
+      } catch (error) {
+        container.innerHTML = `<p class="text-center text-danger">Error al cargar los barberos</p>`;
+      }
+    });
+  </script>
+</body>
+</html>
